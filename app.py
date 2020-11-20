@@ -15,10 +15,9 @@ def rocket_frames():
     return cycle([frame_1, frame_2])
 
 
-async def draw_rocket(canvas, start_row, start_column, negative=True):
+async def draw_rocket(canvas, start_row, start_column, border, negative=True):
     row, column = (start_row, start_column)
-    frames = rocket_frames()
-
+    frames = rocket_frames()    
     while True:
         frame = next(frames)
         draw_frame(canvas, row, column, frame)
@@ -30,9 +29,17 @@ async def draw_rocket(canvas, start_row, start_column, negative=True):
         await asyncio.sleep(0)        
         draw_frame(canvas, row, column, frame, negative=True)
 
-        row_delta, column_delta, _ = read_controls(canvas)        
-        row += row_delta
-        column += column_delta
+        row_delta, column_delta, _ = read_controls(canvas)
+        f_rows, f_columns = get_frame_size(frame)
+        if row_delta == -1:
+            row = max(border["top"], row+row_delta)
+        if row_delta == 1:
+            row = min(border["bottom"]-f_rows, row+row_delta)
+        if column_delta == 1:
+            column = min(border["right"]-f_columns, column+column_delta)
+        if column_delta == -1:
+            column = max(border["left"], column+column_delta)
+
         
 
 
@@ -92,13 +99,20 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
 def draw(canvas):
     canvas.nodelay(True)    
     y, x = canvas.getmaxyx()
+    
+    border = {
+        "top":0,
+        "bottom":y,
+        "left":0,
+        "right":x
+    }
     symbols = "+*.:"    
     #fire_cor = fire(canvas, y - 2, x / 2)
-    rocket_cor = draw_rocket(canvas, y / 2, x / 2)
+    rocket_cor = draw_rocket(canvas, y / 2, x / 2, border)
     coroutines = [
         rocket_cor,
     ]
-
+    #coroutines.append(blink(canvas, 0, 0, "="))
     for i in range(20):
         row = randint(1, y - 2)
         column = randint(1, x - 2)
@@ -112,7 +126,7 @@ def draw(canvas):
             try:
                 cor.send(None)
                 canvas.refresh()
-                time.sleep(0.01)
+                time.sleep(0.001)
             except StopIteration:
                 coroutines.remove(cor)
         
