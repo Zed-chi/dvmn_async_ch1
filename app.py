@@ -11,13 +11,13 @@ def rocket_frames():
         frame_1 = file1.read()
     with open("animations/rocket_frame_2.txt", "r", encoding="utf-8") as file2:
         frame_2 = file2.read()
-    
+
     return cycle([frame_1, frame_2])
 
 
 async def draw_rocket(canvas, start_row, start_column, border, negative=True):
     row, column = (start_row, start_column)
-    frames = rocket_frames()    
+    frames = rocket_frames()
     while True:
         frame = next(frames)
         draw_frame(canvas, row, column, frame)
@@ -26,21 +26,19 @@ async def draw_rocket(canvas, start_row, start_column, border, negative=True):
 
         frame = next(frames)
         draw_frame(canvas, row, column, frame, negative=False)
-        await asyncio.sleep(0)        
+        await asyncio.sleep(0)
         draw_frame(canvas, row, column, frame, negative=True)
 
         row_delta, column_delta, _ = read_controls(canvas)
-        f_rows, f_columns = get_frame_size(frame)
+        frame_rows, frame_columns = get_frame_size(frame)
         if row_delta == -1:
-            row = max(border["top"], row+row_delta)
+            row = max(border["top"], row + row_delta)
         if row_delta == 1:
-            row = min(border["bottom"]-f_rows, row+row_delta)
+            row = min(border["bottom"] - frame_rows, row + row_delta)
         if column_delta == 1:
-            column = min(border["right"]-f_columns, column+column_delta)
+            column = min(border["right"] - frame_columns, column + column_delta)
         if column_delta == -1:
-            column = max(border["left"], column+column_delta)
-
-        
+            column = max(border["left"], column + column_delta)
 
 
 async def blink(canvas, row, column, symbol="*"):
@@ -51,7 +49,19 @@ async def blink(canvas, row, column, symbol="*"):
         await asyncio.sleep(0)
         canvas.addstr(row, column, symbol, curses.A_DIM)
         await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol, curses.A_DIM)
+        await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol, curses.A_DIM)
+        await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol, curses.A_DIM)
+        await asyncio.sleep(0)
 
+        canvas.addstr(row, column, symbol)
+        await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol)
+        await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol)
+        await asyncio.sleep(0)
         canvas.addstr(row, column, symbol)
         await asyncio.sleep(0)
         canvas.addstr(row, column, symbol)
@@ -61,12 +71,22 @@ async def blink(canvas, row, column, symbol="*"):
 
         canvas.addstr(row, column, symbol, curses.A_BOLD)
         await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol, curses.A_BOLD)
+        await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol, curses.A_BOLD)
+        await asyncio.sleep(0)
 
+        canvas.addstr(row, column, symbol)
+        await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol)
+        await asyncio.sleep(0)
         canvas.addstr(row, column, symbol)
         await asyncio.sleep(0)
 
 
-async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
+async def fire(
+    canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
+):
     """Display animation of gun shot, direction and speed can be specified."""
 
     row, column = start_row, start_column
@@ -96,40 +116,33 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
         column += columns_speed
 
 
-def draw(canvas):
-    canvas.nodelay(True)    
-    y, x = canvas.getmaxyx()
-    
-    border = {
-        "top":0,
-        "bottom":y,
-        "left":0,
-        "right":x
-    }
-    symbols = "+*.:"    
-    #fire_cor = fire(canvas, y - 2, x / 2)
-    rocket_cor = draw_rocket(canvas, y / 2, x / 2, border)
-    coroutines = [
-        rocket_cor,
-    ]
-    #coroutines.append(blink(canvas, 0, 0, "="))
-    for i in range(20):
-        row = randint(1, y - 2)
-        column = randint(1, x - 2)
+def get_stars_coroutines(canvas, width, height):
+    coroutines = []
+    symbols = "+*.:"
+    for _ in range(20):
+        row = randint(1, height - 2)
+        column = randint(1, width - 2)
         symbol = choice(symbols)
         coroutines.append(blink(canvas, row, column, symbol))
-    #canvas.border()
+    return coroutines
 
-    for i in range(1000):        
-        cors = coroutines.copy()
-        for cor in cors:
+
+def draw(canvas):
+    canvas.nodelay(True)
+    height, width = canvas.getmaxyx()
+    border = {"top": 0, "bottom": height, "left": 0, "right": width}
+    stars_coroutines = get_stars_coroutines(canvas, width, height)
+    rocket_coroutine = draw_rocket(canvas, height / 2, width / 2, border)
+    coroutines = [rocket_coroutine, *stars_coroutines]
+
+    while True:
+        for cor in coroutines.copy():
             try:
                 cor.send(None)
                 canvas.refresh()
-                time.sleep(0.001)
             except StopIteration:
                 coroutines.remove(cor)
-        
+        time.sleep(0.003)
 
 
 if __name__ == "__main__":
