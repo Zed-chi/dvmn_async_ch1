@@ -178,9 +178,7 @@ async def blink(canvas, row, column, symbol="*"):
         await asyncio.sleep(0)
 
 
-async def fire(
-    canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
-):
+async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
     """Display animation of gun shot, direction and speed can be specified."""
 
     row, column = start_row, start_column
@@ -227,16 +225,13 @@ def draw(canvas):
     border = {"top": 0, "bottom": height, "left": 0, "right": width}
     stars_coroutines = get_stars_coroutines(canvas, width, height)
     rocket_coroutine = draw_rocket(canvas, height / 2, width / 2, border)
-    coroutines = [rocket_coroutine, *stars_coroutines]
 
+    cors = cycle(stars_coroutines)
     while True:
-        for cor in coroutines.copy():
-            try:
-                cor.send(None)
-                canvas.refresh()
-            except StopIteration:
-                coroutines.remove(cor)
-        time.sleep(0.05)
+        rocket_coroutine.send(None)
+        next(cors).send(None)
+        canvas.refresh()
+        time.sleep(0.01)
 
 
 if __name__ == "__main__":
