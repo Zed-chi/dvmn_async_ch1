@@ -12,29 +12,35 @@ def get_rocket_frames_iter():
     with open("animations/rocket_frame_2.txt", "r", encoding="utf-8") as file2:
         frame_2 = file2.read()
 
-    return cycle([frame_1, frame_1, frame_2,frame_2])
+    return cycle([frame_1, frame_1, frame_2, frame_2])
 
 
-async def draw_rocket(canvas, start_row, start_column, border, negative=True, speed_boost=0):
+async def draw_rocket(
+    canvas, start_row, start_column, border, negative=True, speed_boost=0
+):
     row, column = (start_row, start_column)
-    frames = get_rocket_frames_iter()    
+    frames = get_rocket_frames_iter()
     for frame in frames:
         draw_frame(canvas, row, column, frame)
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, frame, negative=True)
 
-        row_delta, column_delta, _ = read_controls(canvas)    
+        row_delta, column_delta, _ = read_controls(canvas)
         frame_rows, frame_columns = get_frame_size(frame)
         if row_delta == -1:
-            row = max(border["top"], row + row_delta-speed_boost)
+            row = max(border["top"], row + (row_delta * speed_boost))
+            
         if row_delta == 1:
-            row = min(border["bottom"] - frame_rows, row + row_delta +speed_boost)
+            row = min(
+                border["bottom"] - frame_rows, row + (row_delta * speed_boost)
+            )
         if column_delta == 1:
             column = min(
-                border["right"] - frame_columns, column + column_delta +speed_boost
+                border["right"] - frame_columns,
+                column + (column_delta * speed_boost),
             )
         if column_delta == -1:
-            column = max(border["left"], column + column_delta-speed_boost)
+            column = max(border["left"], column + (column_delta * speed_boost))
 
 
 async def blink(canvas, row, column, timings, symbol="*"):
@@ -109,7 +115,9 @@ def draw(canvas):
     height, width = canvas.getmaxyx()
     border = {"top": 0, "bottom": height, "left": 0, "right": width}
     stars_coroutines = get_stars_coroutines(canvas, width, height)
-    rocket_coroutine = draw_rocket(canvas, height / 2, width / 2, border)
+    rocket_coroutine = draw_rocket(
+        canvas, height / 2, width / 2, border, speed_boost=1
+    )
     coroutines = [*stars_coroutines, rocket_coroutine]
     while True:
         for coroutine in coroutines.copy():
