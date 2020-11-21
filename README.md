@@ -1,6 +1,7 @@
 # Консольная леталка на Async
-Пример кода на async python
+Пример кода c использованием async в python
 ![alt text](https://s8.gifyu.com/images/photo_2020-11-21_23-53-28.jpg)
+
 ## Требования:
 - python 3.7
 
