@@ -15,27 +15,26 @@ def get_rocket_frames_iter():
     return cycle([frame_1, frame_1, frame_2,frame_2])
 
 
-async def draw_rocket(canvas, start_row, start_column, border, negative=True):
+async def draw_rocket(canvas, start_row, start_column, border, negative=True, speed_boost=0):
     row, column = (start_row, start_column)
-    frames = get_rocket_frames_iter()
-
+    frames = get_rocket_frames_iter()    
     for frame in frames:
         draw_frame(canvas, row, column, frame)
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, frame, negative=True)
 
-        row_delta, column_delta, _ = read_controls(canvas)
+        row_delta, column_delta, _ = read_controls(canvas)    
         frame_rows, frame_columns = get_frame_size(frame)
         if row_delta == -1:
-            row = max(border["top"], row + row_delta)
+            row = max(border["top"], row + row_delta-speed_boost)
         if row_delta == 1:
-            row = min(border["bottom"] - frame_rows, row + row_delta)
+            row = min(border["bottom"] - frame_rows, row + row_delta +speed_boost)
         if column_delta == 1:
             column = min(
-                border["right"] - frame_columns, column + column_delta
+                border["right"] - frame_columns, column + column_delta +speed_boost
             )
         if column_delta == -1:
-            column = max(border["left"], column + column_delta)
+            column = max(border["left"], column + column_delta-speed_boost)
 
 
 async def blink(canvas, row, column, timings, symbol="*"):
