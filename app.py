@@ -18,13 +18,12 @@ def get_rocket_frames_iter():
 async def draw_rocket(canvas, start_row, start_column, border, negative=True):
     row, column = (start_row, start_column)
     frames = get_rocket_frames_iter()
-    frame = next(frames)
-    while True:
+
+    for frame in frames:
         draw_frame(canvas, row, column, frame)
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, frame, negative=True)
 
-        frame = next(frames)
         row_delta, column_delta, _ = read_controls(canvas)
         frame_rows, frame_columns = get_frame_size(frame)
         if row_delta == -1:
@@ -95,9 +94,9 @@ def get_stars_coroutines(canvas, width, height):
     symbols = "+*.:"
     for _ in range(30):
         timings = {
-            "normal": randint(5, 10),
-            "dim": randint(1, 5),
-            "bold": randint(1, 5),
+            "normal": randint(5, 20),
+            "dim": randint(1, 10),
+            "bold": randint(1, 10),
         }
         row = randint(1, height - 2)
         column = randint(1, width - 2)
