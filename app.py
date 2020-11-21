@@ -6,7 +6,7 @@ import asyncio
 import curses
 
 
-def get_rocket_frames():
+def get_rocket_frames_iter():
     with open("animations/rocket_frame_1.txt", "r", encoding="utf-8") as file1:
         frame_1 = file1.read()
     with open("animations/rocket_frame_2.txt", "r", encoding="utf-8") as file2:
@@ -17,7 +17,7 @@ def get_rocket_frames():
 
 async def draw_rocket(canvas, start_row, start_column, border, negative=True):
     row, column = (start_row, start_column)
-    frames = get_rocket_frames()
+    frames = get_rocket_frames_iter()
     while True:
         frame = next(frames)
         draw_frame(canvas, row, column, frame)
