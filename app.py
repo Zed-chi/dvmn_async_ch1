@@ -12,7 +12,7 @@ def get_rocket_frames_iter():
     with open("animations/rocket_frame_2.txt", "r", encoding="utf-8") as file2:
         frame_2 = file2.read()
 
-    return cycle([frame_1, frame_2])
+    return cycle([frame_1, frame_1, frame_2,frame_2])
 
 
 async def draw_rocket(canvas, start_row, start_column, border, negative=True):
@@ -94,9 +94,9 @@ def get_stars_coroutines(canvas, width, height):
     symbols = "+*.:"
     for _ in range(30):
         timings = {
-            "normal": randint(5, 20),
-            "dim": randint(1, 10),
-            "bold": randint(1, 10),
+            "normal": randint(5, 30),
+            "dim": randint(1, 20),
+            "bold": randint(1, 20),
         }
         row = randint(1, height - 2)
         column = randint(1, width - 2)
