@@ -9,7 +9,11 @@
 
 ## Запуск:
 ```bash
->> python3 app.py
+>> python3.7 app.py
+```
+или 
+```bash
+>> python app.py
 ```
 
 
