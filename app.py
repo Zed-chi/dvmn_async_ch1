@@ -18,17 +18,13 @@ def get_rocket_frames_iter():
 async def draw_rocket(canvas, start_row, start_column, border, negative=True):
     row, column = (start_row, start_column)
     frames = get_rocket_frames_iter()
+    frame = next(frames)
     while True:
-        frame = next(frames)
         draw_frame(canvas, row, column, frame)
         await asyncio.sleep(0)
         draw_frame(canvas, row, column, frame, negative=True)
 
         frame = next(frames)
-        draw_frame(canvas, row, column, frame, negative=False)
-        await asyncio.sleep(0)
-        draw_frame(canvas, row, column, frame, negative=True)
-
         row_delta, column_delta, _ = read_controls(canvas)
         frame_rows, frame_columns = get_frame_size(frame)
         if row_delta == -1:
@@ -36,7 +32,9 @@ async def draw_rocket(canvas, start_row, start_column, border, negative=True):
         if row_delta == 1:
             row = min(border["bottom"] - frame_rows, row + row_delta)
         if column_delta == 1:
-            column = min(border["right"] - frame_columns, column + column_delta)
+            column = min(
+                border["right"] - frame_columns, column + column_delta
+            )
         if column_delta == -1:
             column = max(border["left"], column + column_delta)
 
@@ -60,7 +58,9 @@ async def blink(canvas, row, column, timings, symbol="*"):
             await asyncio.sleep(0)
 
 
-async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
+async def fire(
+    canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
+):
     """Display animation of gun shot, direction and speed can be specified."""
 
     row, column = start_row, start_column
@@ -112,11 +112,9 @@ def draw(canvas):
     border = {"top": 0, "bottom": height, "left": 0, "right": width}
     stars_coroutines = get_stars_coroutines(canvas, width, height)
     rocket_coroutine = draw_rocket(canvas, height / 2, width / 2, border)
-    coroutines = [
-        *stars_coroutines, rocket_coroutine
-    ]    
+    coroutines = [*stars_coroutines, rocket_coroutine]
     while True:
-        for coroutine in coroutines.copy():                            
+        for coroutine in coroutines.copy():
             coroutine.send(None)
         canvas.refresh()
         time.sleep(0.01)
