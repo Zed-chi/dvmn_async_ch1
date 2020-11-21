@@ -112,11 +112,12 @@ def draw(canvas):
     border = {"top": 0, "bottom": height, "left": 0, "right": width}
     stars_coroutines = get_stars_coroutines(canvas, width, height)
     rocket_coroutine = draw_rocket(canvas, height / 2, width / 2, border)
-
-    cors = cycle(stars_coroutines)
+    coroutines = [
+        *stars_coroutines, rocket_coroutine
+    ]    
     while True:
-        rocket_coroutine.send(None)
-        next(cors).send(None)
+        for coroutine in coroutines.copy():                            
+            coroutine.send(None)
         canvas.refresh()
         time.sleep(0.01)
 
