@@ -5,7 +5,7 @@
 - python 3.7
 
 ## Установка:
-В win установите `pip install windows-curses`, в др системах `pip install curses`.
+В windows требуется установить `pip install windows-curses`. 
 
 ## Запуск:
 ```bash
