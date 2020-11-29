@@ -4,6 +4,42 @@ from itertools import cycle
 import time
 import asyncio
 import curses
+import os
+
+def get_trash_coroutines(canvas, width, number=5):
+    frames = get_trash_frames()
+    coroutines = []
+    for i in range(number):
+        column = randint(1, width)
+        frame = choice(frames)
+        coroutines.append(fly_garbage(canvas,column, frame))
+    return coroutines
+
+
+def get_trash_frames():
+    frames = []
+    filesnames = os.listdir("./frames")
+    for filename in filesnames:        
+        path = os.path.join("./frames", filename)
+        with open(path, "r") as file:
+            frames.append(file.read())
+    return frames
+
+
+async def fly_garbage(canvas, column, garbage_frame, speed=0.5):
+    """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
+    rows_number, columns_number = canvas.getmaxyx()
+
+    column = max(column, 0)
+    column = min(column, columns_number - 1)
+
+    row = 0
+
+    while row < rows_number:
+        draw_frame(canvas, row, column, garbage_frame)
+        await asyncio.sleep(0)
+        draw_frame(canvas, row, column, garbage_frame, negative=True)
+        row += speed
 
 
 def get_rocket_frames_iter():
@@ -116,8 +152,9 @@ def draw(canvas):
     rocket_coroutine = draw_rocket(
         canvas, height / 2, width / 2, border, speed_boost=1
     )
+    trash_cors = get_trash_coroutines(canvas, width, 6)
     fire_coroutine = fire(canvas, height-1, width/2)
-    coroutines = [*stars_coroutines, rocket_coroutine, fire_coroutine]
+    coroutines = [*stars_coroutines, rocket_coroutine, fire_coroutine, *trash_cors]
     while True:
         for coroutine in coroutines.copy():
             try:
