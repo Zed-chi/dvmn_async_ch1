@@ -1,27 +1,23 @@
-import asyncio
 import curses
 from random import randint, choice
+from utils import sleep
 
 """ stars stuff """
 
 
 async def blink(canvas, row, column, timings, symbol="*"):
     while True:
-        for _ in range(timings["dim"]):
-            canvas.addstr(row, column, symbol, curses.A_DIM)
-            await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol, curses.A_DIM)
+        await sleep(timings["dim"])
 
-        for _ in range(timings["normal"]):
-            canvas.addstr(row, column, symbol)
-            await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol)
+        await sleep(timings["normal"])
 
-        for _ in range(timings["bold"]):
-            canvas.addstr(row, column, symbol, curses.A_BOLD)
-            await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol, curses.A_BOLD)
+        await sleep(timings["bold"])
 
-        for _ in range(timings["normal"]):
-            canvas.addstr(row, column, symbol)
-            await asyncio.sleep(0)
+        canvas.addstr(row, column, symbol)
+        await sleep(timings["normal"])
 
 
 def get_stars_coroutines(canvas, width, height):

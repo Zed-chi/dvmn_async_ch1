@@ -2,6 +2,7 @@ import os
 import asyncio
 from random import randint, choice
 from curses_tools import draw_frame
+from utils import sleep
 
 
 def get_trash_frames():
@@ -21,11 +22,10 @@ async def fill_orbit_with_garbage(canvas, width, routines):
     frames = get_trash_frames()
 
     while True:
-        await asyncio.sleep(0)
-
         column = randint(1, width)
         frame = choice(frames)
         routines.append(fly_garbage(canvas, column, frame))
+        await sleep()
 
 
 def get_trash_coroutines(canvas, width, height, number=5):
@@ -34,7 +34,7 @@ def get_trash_coroutines(canvas, width, height, number=5):
     for i in range(number):
         column = randint(1, width)
         row = randint(1, height)
-        speed = randint(2, 5) / 10
+        speed = randint(2, 10) / 10
         frame = choice(frames)
         coroutines.append(fly_garbage(canvas, column, frame, row, speed))
     return coroutines
@@ -49,6 +49,6 @@ async def fly_garbage(canvas, column, garbage_frame, row=0, speed=0.3):
 
     while row < rows_number:
         draw_frame(canvas, row, column, garbage_frame)
-        await asyncio.sleep(0)
+        await sleep()
         draw_frame(canvas, row, column, garbage_frame, negative=True)
         row += speed
