@@ -14,6 +14,7 @@ from rocket import draw_rocket, fire
 
 
 def draw(canvas):
+    obtacles = []
     routines = []
     frames = get_trash_frames()
     canvas.nodelay(True)
@@ -25,15 +26,15 @@ def draw(canvas):
     )
     trash_cors = get_trash_coroutines(canvas, width, height, 6)
     fire_coroutine = fire(canvas, height - 1, width // 2)
-    filler = fill_orbit_with_garbage(canvas, width, routines)
+    filler = fill_orbit_with_garbage(obtacles, canvas, width, routines)
 
-    routines = [
+    routines.extend([
         filler,
         rocket_coroutine,
         fire_coroutine,
         *stars_coroutines,
         *trash_cors,
-    ]
+    ])
 
     while True:
         for coroutine in routines.copy():
@@ -41,9 +42,9 @@ def draw(canvas):
                 coroutine.send(None)
             except StopIteration:
                 routines.remove(coroutine)
-                column = randint(1, width)
-                frame = choice(frames)
-                routines.append(fly_garbage(canvas, column, frame))
+                #column = randint(1, width)
+                #frame = choice(frames)
+                #routines.append(fly_garbage(canvas, column, frame))
         canvas.refresh()
         time.sleep(0.05)
 
