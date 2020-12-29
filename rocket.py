@@ -19,9 +19,11 @@ def get_rocket_frames_iter():
 
     return cycle([frame_1, frame_1, frame_2, frame_2])
 
+async def run_spaceship(routines, ):
+    pass
 
 async def fire(
-    canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
+    canvas, start_row, start_column, rows_speed=-1, columns_speed=0
 ):
     """Display animation of gun shot, direction and speed can be specified."""
 
@@ -53,7 +55,7 @@ async def fire(
 
 
 async def draw_rocket(
-    canvas, start_row, start_column, border, negative=True, speed_boost=0
+    routines, canvas, start_row, start_column, border, negative=True, speed_boost=0
 ):
     row, column = (start_row, start_column)
     row_speed = column_speed = 0
@@ -63,13 +65,13 @@ async def draw_rocket(
         await sleep()
         draw_frame(canvas, row, column, frame, negative=True)
 
-        row_delta, column_delta, _ = read_controls(canvas)
+        row_delta, column_delta, space = read_controls(canvas)
         frame_rows, frame_columns = get_frame_size(frame)
 
         row_speed, column_speed = update_speed(
             row_speed, column_speed, row_delta, column_delta
         )
-
+        
         if row_delta == -1:
             row = max(border["top"], row + row_speed)
         elif row_delta == 1:
@@ -91,3 +93,5 @@ async def draw_rocket(
                 border["right"] - frame_columns,
                 column,
             )
+        if space:
+            routines.append(fire(canvas, row, column,))

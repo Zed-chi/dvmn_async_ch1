@@ -25,7 +25,7 @@ async def fill_orbit_with_garbage(canvas, width, routines):
         column = randint(1, width)
         frame = choice(frames)
         routines.append(fly_garbage(canvas, column, frame))
-        await sleep()
+        await sleep(10)
 
 
 def get_trash_coroutines(canvas, width, height, number=5):
