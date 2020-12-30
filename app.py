@@ -37,7 +37,7 @@ def draw(canvas):
             filler,
             rocket_coroutine,
             *stars_coroutines,            
-            ob_cors
+            #ob_cors
         ]
     )
     while True:
