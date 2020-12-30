@@ -27,7 +27,8 @@ async def run_spaceship(
 
 
 async def fire(
-    canvas, start_row, start_column, rows_speed=-1, columns_speed=0
+    obstacles, canvas, start_row, 
+    start_column, rows_speed=-1, columns_speed=0
 ):
     """Display animation of gun shot, direction and speed can be specified."""
 
@@ -51,6 +52,10 @@ async def fire(
     # curses.beep()
 
     while 0 < row < max_row and 0 < column < max_column:
+        for i in obstacles: 
+            if i.has_collision(row,column):
+                return
+        
         canvas.addstr(round(row), round(column), symbol)
         await sleep()
         canvas.addstr(round(row), round(column), " ")
@@ -59,6 +64,7 @@ async def fire(
 
 
 async def draw_rocket(
+    obstacles,
     routines,
     canvas,
     start_row,
@@ -105,9 +111,5 @@ async def draw_rocket(
             )
         if space:
             routines.append(
-                fire(
-                    canvas,
-                    row,
-                    column,
-                )
+                fire(obstacles, canvas, row, column)
             )

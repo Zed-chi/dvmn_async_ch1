@@ -24,7 +24,8 @@ def draw(canvas):
     
     stars_coroutines = get_stars_coroutines(canvas, width, height)
     rocket_coroutine = draw_rocket(
-        routines, canvas, height // 2, width // 2, border, speed_boost=1
+        obstacles, routines, canvas, 
+        height // 2, width // 2, border, speed_boost=1
     )
     filler = fill_orbit_with_garbage(obstacles, canvas, width, routines)
     ob_cors = show_obstacles(canvas, obstacles)
@@ -43,7 +44,7 @@ def draw(canvas):
                 coroutine.send(None)
             except StopIteration:
                 routines.remove(coroutine)                
-                print(len(obstacles))
+                #print(len(obstacles))
         canvas.refresh()
         time.sleep(0.05)
     
