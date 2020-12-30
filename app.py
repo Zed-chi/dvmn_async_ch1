@@ -14,28 +14,28 @@ from rocket import draw_rocket, fire
 
 
 def draw(canvas):
-    obtacles = []
+    obstacles = []
     routines = []
     frames = get_trash_frames()
     canvas.nodelay(True)
     height, width = canvas.getmaxyx()
     border = {"top": 0, "bottom": height, "left": 0, "right": width}
     stars_coroutines = get_stars_coroutines(canvas, width, height)
-    rocket_coroutine = draw_rocket(
+    rocket_coroutine = draw_rocket(routines,
         canvas, height // 2, width // 2, border, speed_boost=1
     )
     trash_cors = get_trash_coroutines(canvas, width, height, 6)
     fire_coroutine = fire(canvas, height - 1, width // 2)
-    filler = fill_orbit_with_garbage(obtacles, canvas, width, routines)
+    filler = fill_orbit_with_garbage(obstacles, canvas, width, routines)
+    trash_cors = get_trash_coroutines(canvas, width, height, 6)    
+    filler = fill_orbit_with_garbage(obstacles, canvas, width, routines)
 
     routines.extend([
         filler,
-        rocket_coroutine,
-        fire_coroutine,
+        rocket_coroutine,        
         *stars_coroutines,
         *trash_cors,
     ])
-
     while True:
         for coroutine in routines.copy():
             try:

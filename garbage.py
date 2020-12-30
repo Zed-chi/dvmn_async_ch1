@@ -3,7 +3,7 @@ import asyncio
 from random import randint, choice
 from curses_tools import draw_frame, get_frame_size
 from utils import sleep
-from obstacle import Obstacle
+from obstacles import Obstacle
 
 
 def get_trash_frames():
@@ -28,11 +28,9 @@ async def fill_orbit_with_garbage(obstacles, canvas, width, routines):
         rows, columns = get_frame_size(frame)
         a = Obstacle(0,column, rows, columns)
         obstacles.append(a)
-
         routines.append(fly_garbage(canvas, column, frame))
         routines.append(fly_garbage(canvas, column, a.get_bounding_box_frame()))
         await sleep(7)
-
 
 def get_trash_coroutines(canvas, width, height, number=5):
     frames = get_trash_frames()
