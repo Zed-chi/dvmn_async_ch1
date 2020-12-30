@@ -3,6 +3,17 @@ from curses_tools import draw_frame
 from utils import sleep
 
 
+class Collision:
+    def __init__(self, row, column):
+        self.row = row
+        self.column = column   
+
+    def __str__(self):
+        return f"{self.row}-{self.column}"
+    
+    def __repr__(self) -> str:
+        return f"<r{self.row}|c{self.column}>"
+
 class Obstacle:
     def __init__(self, row, column, rows_size=1, columns_size=1, uid=None):
         self.row = row

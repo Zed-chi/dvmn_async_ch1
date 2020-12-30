@@ -19,7 +19,7 @@ def get_trash_frames():
 """ Garbage stuff"""
 
 
-async def fill_orbit_with_garbage(obstacles, canvas, width, routines):
+async def fill_orbit_with_garbage(collisions, obstacles, canvas, width, routines):
     frames = get_trash_frames()
 
     while True:
@@ -28,7 +28,7 @@ async def fill_orbit_with_garbage(obstacles, canvas, width, routines):
         rows, columns = get_frame_size(frame)
         a = Obstacle(0, column, rows, columns)
         obstacles.append(a)
-        routines.append(fly_garbage(obstacles, a, canvas, column, frame))
+        routines.append(fly_garbage(collisions, obstacles, a, canvas, column, frame))
         await sleep(7)
 
 
@@ -44,7 +44,7 @@ def get_trash_coroutines(canvas, width, height, number=5):
     return coroutines
 
 
-async def fly_garbage(obs, 
+async def fly_garbage(collisions, obs, 
     obstacle, canvas, column, garbage_frame, row=0, speed=0.3
 ):
     """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
@@ -56,7 +56,18 @@ async def fly_garbage(obs,
     while row < rows_number:
         obstacle.row = row
         draw_frame(canvas, row, column, garbage_frame)
+        
         await sleep(1)
         draw_frame(canvas, row, column, garbage_frame, negative=True)
         row += speed
+        
+        for i in collisions:            
+            if obstacle.has_collision(        
+                i.row,
+                i.column,                        
+            ):
+                #print("fuck")
+                collisions.remove(i)
+                obs.remove(obstacle)
+                return                
     obs.remove(obstacle)

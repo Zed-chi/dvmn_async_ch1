@@ -16,7 +16,8 @@ from rocket import draw_rocket, fire
 
 def draw(canvas):
     obstacles = []
-    routines = []    
+    routines = []
+    collisions = []
 
     canvas.nodelay(True)
     height, width = canvas.getmaxyx()
@@ -24,10 +25,11 @@ def draw(canvas):
     
     stars_coroutines = get_stars_coroutines(canvas, width, height)
     rocket_coroutine = draw_rocket(
+        collisions,
         obstacles, routines, canvas, 
         height // 2, width // 2, border, speed_boost=1
     )
-    filler = fill_orbit_with_garbage(obstacles, canvas, width, routines)
+    filler = fill_orbit_with_garbage(collisions, obstacles, canvas, width, routines)
     ob_cors = show_obstacles(canvas, obstacles)
 
     routines.extend(
@@ -44,7 +46,7 @@ def draw(canvas):
                 coroutine.send(None)
             except StopIteration:
                 routines.remove(coroutine)                
-                #print(len(obstacles))
+                #print(len(collisions))
         canvas.refresh()
         time.sleep(0.05)
     

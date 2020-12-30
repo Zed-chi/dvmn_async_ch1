@@ -3,6 +3,7 @@ import curses
 from curses_tools import read_controls, draw_frame, get_frame_size
 from utils import sleep
 from physics import update_speed
+from obstacles import Collision
 
 """ rocket stuff """
 
@@ -26,7 +27,7 @@ async def run_spaceship(
     pass
 
 
-async def fire(
+async def fire(collisions,
     obstacles, canvas, start_row, 
     start_column, rows_speed=-1, columns_speed=0
 ):
@@ -54,6 +55,8 @@ async def fire(
     while 0 < row < max_row and 0 < column < max_column:
         for i in obstacles: 
             if i.has_collision(row,column):
+                collisions.append(Collision(int(row),int(column)))
+                #print(collisions)
                 return
         
         canvas.addstr(round(row), round(column), symbol)
@@ -64,6 +67,7 @@ async def fire(
 
 
 async def draw_rocket(
+    collisions,
     obstacles,
     routines,
     canvas,
@@ -111,5 +115,5 @@ async def draw_rocket(
             )
         if space:
             routines.append(
-                fire(obstacles, canvas, row, column)
+                fire(collisions, obstacles, canvas, row, column)
             )
