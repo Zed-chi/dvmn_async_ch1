@@ -65,7 +65,7 @@ def draw_frame(canvas, start_row, start_column, text, negative=False):
                 continue
 
             symbol = symbol if not negative else " "
-            canvas.addch(row, column, symbol)
+            canvas.addstr(row, column, symbol)
 
 
 def get_frame_size(text):

@@ -24,6 +24,9 @@ def draw(canvas):
     rocket_coroutine = draw_rocket(routines,
         canvas, height // 2, width // 2, border, speed_boost=1
     )
+    trash_cors = get_trash_coroutines(canvas, width, height, 6)
+    fire_coroutine = fire(canvas, height - 1, width // 2)
+    filler = fill_orbit_with_garbage(obstacles, canvas, width, routines)
     trash_cors = get_trash_coroutines(canvas, width, height, 6)    
     filler = fill_orbit_with_garbage(obstacles, canvas, width, routines)
 
@@ -31,17 +34,16 @@ def draw(canvas):
         filler,
         rocket_coroutine,        
         *stars_coroutines,
-        *trash_cors,]
-    )
-
+        *trash_cors,
+    ])
     while True:
         for coroutine in routines.copy():
             try:
                 coroutine.send(None)
             except StopIteration:
                 routines.remove(coroutine)
-                column = randint(1, width)
-                frame = choice(frames)
+                #column = randint(1, width)
+                #frame = choice(frames)
                 #routines.append(fly_garbage(canvas, column, frame))
         canvas.refresh()
         time.sleep(0.05)
