@@ -42,12 +42,11 @@ def draw(canvas):
             try:
                 coroutine.send(None)
             except StopIteration:
-                routines.remove(coroutine)
-                # column = randint(1, width)
-                # frame = choice(frames)
-                # routines.append(fly_garbage(canvas, column, frame))
+                routines.remove(coroutine)                
+                print(len(obstacles))
         canvas.refresh()
         time.sleep(0.05)
+    
 
 
 if __name__ == "__main__":
