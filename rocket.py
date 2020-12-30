@@ -19,8 +19,12 @@ def get_rocket_frames_iter():
 
     return cycle([frame_1, frame_1, frame_2, frame_2])
 
-async def run_spaceship(routines, ):
+
+async def run_spaceship(
+    routines,
+):
     pass
+
 
 async def fire(
     canvas, start_row, start_column, rows_speed=-1, columns_speed=0
@@ -44,7 +48,7 @@ async def fire(
     rows, columns = canvas.getmaxyx()
     max_row, max_column = rows - 1, columns - 1
 
-    #curses.beep()
+    # curses.beep()
 
     while 0 < row < max_row and 0 < column < max_column:
         canvas.addstr(round(row), round(column), symbol)
@@ -55,7 +59,13 @@ async def fire(
 
 
 async def draw_rocket(
-    routines, canvas, start_row, start_column, border, negative=True, speed_boost=0
+    routines,
+    canvas,
+    start_row,
+    start_column,
+    border,
+    negative=True,
+    speed_boost=0,
 ):
     row, column = (start_row, start_column)
     row_speed = column_speed = 0
@@ -71,7 +81,7 @@ async def draw_rocket(
         row_speed, column_speed = update_speed(
             row_speed, column_speed, row_delta, column_delta
         )
-        
+
         if row_delta == -1:
             row = max(border["top"], row + row_speed)
         elif row_delta == 1:
@@ -94,4 +104,10 @@ async def draw_rocket(
                 column,
             )
         if space:
-            routines.append(fire(canvas, row, column,))
+            routines.append(
+                fire(
+                    canvas,
+                    row,
+                    column,
+                )
+            )
