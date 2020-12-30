@@ -2,6 +2,7 @@ from random import randint, choice
 import time
 import asyncio
 import curses
+from obstacles import show_obstacles
 
 from garbage import (
     get_trash_coroutines,
@@ -25,16 +26,19 @@ def draw(canvas):
         canvas, height // 2, width // 2, border, speed_boost=1
     )
     trash_cors = get_trash_coroutines(canvas, width, height, 6)
-    fire_coroutine = fire(canvas, height - 1, width // 2)
+    #fire_coroutine = fire(canvas, height - 1, width // 2)
     filler = fill_orbit_with_garbage(obstacles, canvas, width, routines)
     trash_cors = get_trash_coroutines(canvas, width, height, 6)    
     filler = fill_orbit_with_garbage(obstacles, canvas, width, routines)
+
+
 
     routines.extend([
         filler,
         rocket_coroutine,        
         *stars_coroutines,
         *trash_cors,
+        show_obstacles(canvas, obstacles)
     ])
     while True:
         for coroutine in routines.copy():
