@@ -37,7 +37,8 @@ async def print_years(state, canvas):
         elif state["year"] == 2020:
             state["level"] = 12
 
-        canvas.addstr(0, 0, f"year is {state['year']}")
+        canvas.addstr(0, 0, f"year is {state['year']}, level is {state['level']}")
+        canvas.refresh()
         counter += 1
         await sleep(1)
         if counter == 100:
@@ -52,11 +53,12 @@ def draw(wind):
         "routines": [],
         "collisions": [],
         "level": 1,
-    }
-
-    canvas = wind.derwin(0, 0)
+    }    
+    main_height, width = wind.getmaxyx()
+    info_line = wind.subwin(1, width,0,0)    
+    canvas = wind.derwin(main_height-1,width, 1,0)
     canvas.nodelay(True)
-    height, width = canvas.getmaxyx()
+    height = main_height - 1
     border = {"top": 0, "bottom": height, "left": 0, "right": width}
 
     stars_coroutines = get_stars_coroutines(canvas, width, height)
@@ -72,10 +74,10 @@ def draw(wind):
             rocket_coroutine,
             *stars_coroutines,
             # ob_cors
-            print_years(state, canvas),
+            print_years(state, info_line),
         ]
     )
-    while True:
+    while True:        
         for coroutine in state["routines"].copy():
             try:
                 coroutine.send(None)
