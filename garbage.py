@@ -20,7 +20,11 @@ def get_trash_frames():
 """ Garbage stuff"""
 
 
-async def fill_orbit_with_garbage(collisions, obstacles, canvas, width, routines):
+async def fill_orbit_with_garbage(
+    state,
+    canvas,
+    width,
+):
     frames = get_trash_frames()
 
     while True:
@@ -28,9 +32,9 @@ async def fill_orbit_with_garbage(collisions, obstacles, canvas, width, routines
         frame = choice(frames)
         rows, columns = get_frame_size(frame)
         a = Obstacle(0, column, rows, columns)
-        obstacles.append(a)
-        routines.append(fly_garbage(routines, collisions, obstacles, a, canvas, column, frame))
-        await sleep(7)
+        state["obstacles"].append(a)
+        state["routines"].append(fly_garbage(state, a, canvas, column, frame))
+        await sleep(20)
 
 
 def get_trash_coroutines(canvas, width, height, number=5):
@@ -45,8 +49,14 @@ def get_trash_coroutines(canvas, width, height, number=5):
     return coroutines
 
 
-async def fly_garbage(routines, collisions, obs, 
-    obstacle, canvas, column, garbage_frame, row=0, speed=0.3
+async def fly_garbage(
+    state,
+    obstacle,
+    canvas,
+    column,
+    garbage_frame,
+    row=0,
+    speed=0.3,
 ):
     """Animate garbage, flying from top to bottom. Сolumn position will stay same, as specified on start."""
     rows_number, columns_number = canvas.getmaxyx()
@@ -57,18 +67,18 @@ async def fly_garbage(routines, collisions, obs,
     while row < rows_number:
         obstacle.row = row
         draw_frame(canvas, row, column, garbage_frame)
-        
+
         await sleep(1)
         draw_frame(canvas, row, column, garbage_frame, negative=True)
         row += speed
-        
-        for i in collisions:            
-            if obstacle.has_collision(        
+
+        for i in state["collisions"]:
+            if obstacle.has_collision(
                 i.row,
-                i.column,                        
+                i.column,
             ):
-                routines.append(explode(canvas, row, column))
-                collisions.remove(i)
-                obs.remove(obstacle)
-                return                
-    obs.remove(obstacle)
+                state["routines"].append(explode(canvas, row, column))
+                state["collisions"].remove(i)
+                state["obstacles"].remove(obstacle)
+                return
+    state["obstacles"].remove(obstacle)

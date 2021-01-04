@@ -1,55 +1,88 @@
-from random import randint, choice
 import time
-import asyncio
 import curses
+from utils import sleep
 from obstacles import show_obstacles
-
 from garbage import (
-    get_trash_coroutines,
     fill_orbit_with_garbage,
-    get_trash_frames,
-    fly_garbage,
 )
 from stars import get_stars_coroutines
-from rocket import draw_rocket, fire
+from rocket import draw_rocket
 
 
-def draw(canvas):
-    obstacles = []
-    routines = []
-    collisions = []
+async def print_years(state, canvas):
+    counter = 0
+    while True:
+        if state["year"] == 1960:
+            state["level"] = 2
+        elif state["year"] == 1965:
+            state["level"] = 3
+        elif state["year"] == 1970:
+            state["level"] = 3
+        elif state["year"] == 1975:
+            state["level"] = 4
+        elif state["year"] == 1980:
+            state["level"] = 5
+        elif state["year"] == 1985:
+            state["level"] = 6
+        elif state["year"] == 1990:
+            state["level"] = 7
+        elif state["year"] == 1995:
+            state["level"] = 8
+        elif state["year"] == 2000:
+            state["level"] = 9
+        elif state["year"] == 2010:
+            state["level"] = 10
+        elif state["year"] == 2015:
+            state["level"] = 11
+        elif state["year"] == 2020:
+            state["level"] = 12
 
+        canvas.addstr(0, 0, f"year is {state['year']}")
+        counter += 1
+        await sleep(1)
+        if counter == 100:
+            state["year"] += 1
+            counter = 0
+
+
+def draw(wind):
+    state = {
+        "year": 1957,
+        "obstacles": [],
+        "routines": [],
+        "collisions": [],
+        "level": 1,
+    }
+
+    canvas = wind.derwin(0, 0)
     canvas.nodelay(True)
     height, width = canvas.getmaxyx()
     border = {"top": 0, "bottom": height, "left": 0, "right": width}
-    
+
     stars_coroutines = get_stars_coroutines(canvas, width, height)
     rocket_coroutine = draw_rocket(
-        collisions,
-        obstacles, routines, canvas, 
-        height // 2, width // 2, border, speed_boost=1
+        state, canvas, height // 2, width // 2, border, speed_boost=1
     )
-    filler = fill_orbit_with_garbage(collisions, obstacles, canvas, width, routines)
-    ob_cors = show_obstacles(canvas, obstacles)
+    filler = fill_orbit_with_garbage(state, canvas, width)
+    ob_cors = show_obstacles(canvas, state)
 
-    routines.extend(
+    state["routines"].extend(
         [
             filler,
             rocket_coroutine,
-            *stars_coroutines,            
-            #ob_cors
+            *stars_coroutines,
+            # ob_cors
+            print_years(state, canvas),
         ]
     )
     while True:
-        for coroutine in routines.copy():
+        for coroutine in state["routines"].copy():
             try:
                 coroutine.send(None)
             except StopIteration:
-                routines.remove(coroutine)                
-                #print(len(collisions))
+                state["routines"].remove(coroutine)
         canvas.refresh()
         time.sleep(0.05)
-    
 
 
 if __name__ == "__main__":
