@@ -32,9 +32,39 @@ async def fill_orbit_with_garbage(
         frame = choice(frames)
         rows, columns = get_frame_size(frame)
         a = Obstacle(0, column, rows, columns)
-        state["obstacles"].append(a)
-        state["routines"].append(fly_garbage(state, a, canvas, column, frame))
-        await sleep(20)
+        state["obstacles"].append(a)        
+        
+        if state['level'] == 1:
+            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.1))
+            await sleep(30)
+        elif state['level'] == 2:
+            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.2))
+            await sleep(25)
+        elif state['level'] == 3:
+            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.25))
+            await sleep(20)
+        elif state['level'] == 4:
+            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.3))
+            await sleep(15)
+        elif state['level'] == 5:
+            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.35))
+            await sleep(13)
+        elif state['level'] == 6:
+            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.40))
+            await sleep(11)
+        elif state['level'] == 7:
+            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.45))
+            await sleep(10)
+        elif state['level'] == 8:
+            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.5))
+            await sleep(9)
+        elif state['level'] == 9:
+            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.55))
+            await sleep(8)
+        elif state['level'] >= 10:
+            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.60))
+            await sleep(5)
+        
 
 
 def get_trash_coroutines(canvas, width, height, number=5):
