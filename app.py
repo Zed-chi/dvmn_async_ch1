@@ -1,16 +1,15 @@
 import time
 import curses
+
 from utils import sleep
-from obstacles import show_obstacles
-from garbage import (
-    fill_orbit_with_garbage,
-)
+from garbage import fill_orbit_with_garbage
 from stars import get_stars_coroutines
 from rocket import draw_rocket
 
 
-async def print_years(state, canvas):
-    counter = 0
+async def update_info_line(state, canvas):
+    """ Updating year and level info on the screen """
+
     while True:
         if state["year"] == 1960:
             state["level"] = 2
@@ -37,53 +36,51 @@ async def print_years(state, canvas):
         elif state["year"] == 2020:
             state["level"] = 12
 
-        canvas.addstr(0, 0, f"year is {state['year']}, level is {state['level']}")
+        canvas.addstr(
+            0, 0, f"year is {state['year']}, level is {state['level']}",
+        )
         canvas.refresh()
-        counter += 1
-        await sleep(1)
-        if counter == 100:
-            state["year"] += 1
-            counter = 0
+        await sleep(100)
+        state["year"] += 1
 
 
-def draw(wind):
+def draw(window):
     state = {
         "year": 1957,
         "obstacles": [],
         "routines": [],
         "collisions": [],
         "level": 1,
-    }    
-    main_height, width = wind.getmaxyx()
-    info_line = wind.subwin(1, width,0,0)    
-    canvas = wind.derwin(main_height-1,width, 1,0)
-    canvas.nodelay(True)
-    height = main_height - 1
-    border = {"top": 0, "bottom": height, "left": 0, "right": width}
+    }
 
-    stars_coroutines = get_stars_coroutines(canvas, width, height)
-    rocket_coroutine = draw_rocket(
-        state, canvas, height // 2, width // 2, border, speed_boost=1
+    window_height, window_width = window.getmaxyx()
+    info_line = window.subwin(1, window_width, 0, 0)
+    game_window = window.derwin(window_height - 1, window_width, 1, 0)
+    game_window.nodelay(True)
+    game_height = window_height - 1
+    game_width = window_width
+    border = {"top": 0, "bottom": game_height, "left": 0, "right": game_width}
+
+    stars_coroutines = get_stars_coroutines(
+        game_window, game_width, game_height,
     )
-    filler = fill_orbit_with_garbage(state, canvas, width)
-    ob_cors = show_obstacles(canvas, state)
+    rocket_coroutine = draw_rocket(
+        state, game_window, game_height // 2, game_width // 2, border,
+    )
+    garbage_creator = fill_orbit_with_garbage(state, game_window, game_width)
+    info_coroutine = update_info_line(state, info_line)
 
     state["routines"].extend(
-        [
-            filler,
-            rocket_coroutine,
-            *stars_coroutines,
-            # ob_cors
-            print_years(state, info_line),
-        ]
+        [garbage_creator, rocket_coroutine, *stars_coroutines, info_coroutine],
     )
-    while True:        
+
+    while True:
         for coroutine in state["routines"].copy():
             try:
                 coroutine.send(None)
             except StopIteration:
                 state["routines"].remove(coroutine)
-        canvas.refresh()
+        game_window.refresh()
         time.sleep(0.05)
 
 

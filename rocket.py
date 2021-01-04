@@ -1,33 +1,33 @@
+import curses
 from itertools import cycle
+
 from curses_tools import read_controls, draw_frame, get_frame_size
-from utils import sleep
-from physics import update_speed
-from obstacles import Collision, Obstacle
 from explosion import explode
+from obstacles import Collision, Obstacle
+from physics import update_speed
+from utils import sleep
 
-""" rocket stuff """
 
-
-def get_end():
+def get_end_title_frame():
     with open("end.txt", "r") as file:
         return file.read()
 
 
 async def end(canvas):
-    rows_number, columns_number = canvas.getmaxyx()    
-
+    rows_number, columns_number = canvas.getmaxyx()
+    frame = get_end_title_frame()
     while True:
-        draw_frame(canvas, rows_number//2, 10, get_end())
+        draw_frame(canvas, rows_number // 2, 10, frame)
         await sleep(100)
 
 
 def get_rocket_frames_iter():
     with open(
-        "./animations/rocket_frame_1.txt", "r", encoding="utf-8"
+        "./animations/rocket_frame_1.txt", "r", encoding="utf-8",
     ) as file1:
         frame_1 = file1.read()
     with open(
-        "./animations/rocket_frame_2.txt", "r", encoding="utf-8"
+        "./animations/rocket_frame_2.txt", "r", encoding="utf-8",
     ) as file2:
         frame_2 = file2.read()
 
@@ -61,11 +61,11 @@ async def fire(
     rows, columns = canvas.getmaxyx()
     max_row, max_column = rows - 1, columns - 1
 
-    # curses.beep()
+    curses.beep()
 
     while 0 < row < max_row and 0 < column < max_column:
-        for i in state["obstacles"]:
-            if i.has_collision(row, column):
+        for obstacle in state["obstacles"]:
+            if obstacle.has_collision(row, column):
                 state["collisions"].append(Collision(int(row), int(column)))
                 return
 
@@ -83,7 +83,7 @@ async def draw_rocket(
     start_column,
     border,
     negative=True,
-    speed_boost=0,
+    speed_boost=1,
 ):
     row, column = (start_row, start_column)
     row_speed = column_speed = 0
@@ -94,9 +94,12 @@ async def draw_rocket(
     for frame in frames:
         rocket.row = row
         rocket.column = column
-        for i in state["obstacles"]:
+        for obstacle in state["obstacles"]:
             if rocket.has_collision(
-                i.row, i.column, i.rows_size, i.columns_size
+                obstacle.row,
+                obstacle.column,
+                obstacle.rows_size,
+                obstacle.columns_size,
             ):
                 state["routines"].append(explode(canvas, row, column))
                 state["routines"].append(end(canvas))
@@ -107,12 +110,12 @@ async def draw_rocket(
 
         row_delta, column_delta, space = read_controls(canvas)
         if space and state["year"] >= 1960:
-            state["routines"].append(fire(state, canvas, row, column+2))
+            state["routines"].append(fire(state, canvas, row, column + 2))
 
         frame_rows, frame_columns = get_frame_size(frame)
 
         row_speed, column_speed = update_speed(
-            row_speed, column_speed, row_delta, column_delta
+            row_speed, column_speed, row_delta, column_delta,
         )
 
         if row_delta == -1:
@@ -136,4 +139,3 @@ async def draw_rocket(
                 border["right"] - frame_columns,
                 column,
             )
-        

@@ -1,8 +1,7 @@
 import curses
 from random import randint, choice
-from utils import sleep
 
-""" stars stuff """
+from utils import sleep
 
 
 async def blink(canvas, row, column, timings, symbol="*"):

@@ -1,5 +1,5 @@
 import os
-import asyncio
+
 from random import randint, choice
 from curses_tools import draw_frame, get_frame_size
 from utils import sleep
@@ -17,9 +17,6 @@ def get_trash_frames():
     return frames
 
 
-""" Garbage stuff"""
-
-
 async def fill_orbit_with_garbage(
     state,
     canvas,
@@ -31,40 +28,53 @@ async def fill_orbit_with_garbage(
         column = randint(1, width)
         frame = choice(frames)
         rows, columns = get_frame_size(frame)
-        a = Obstacle(0, column, rows, columns)
-        state["obstacles"].append(a)        
-        
-        if state['level'] == 1:
-            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.1))
-            await sleep(30)
-        elif state['level'] == 2:
-            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.2))
-            await sleep(25)
-        elif state['level'] == 3:
-            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.25))
-            await sleep(20)
-        elif state['level'] == 4:
-            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.3))
-            await sleep(15)
-        elif state['level'] == 5:
-            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.35))
-            await sleep(13)
-        elif state['level'] == 6:
-            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.40))
-            await sleep(11)
-        elif state['level'] == 7:
-            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.45))
-            await sleep(10)
-        elif state['level'] == 8:
-            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.5))
-            await sleep(9)
-        elif state['level'] == 9:
-            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.55))
-            await sleep(8)
-        elif state['level'] >= 10:
-            state["routines"].append(fly_garbage(state, a, canvas, column, frame, speed=0.60))
-            await sleep(5)
-        
+        garbage_obstacle = Obstacle(0, column, rows, columns)
+        state["obstacles"].append(garbage_obstacle)
+
+        if state["level"] == 1:
+            garbage_speed = 0.1
+            time_to_sleep = 30
+        elif state["level"] == 2:
+            garbage_speed = 0.2
+            time_to_sleep = 25
+        elif state["level"] == 3:
+            garbage_speed = 0.25
+            time_to_sleep = 20
+        elif state["level"] == 4:
+            garbage_speed = 0.3
+            time_to_sleep = 15
+        elif state["level"] == 5:
+            garbage_speed = 0.35
+            time_to_sleep = 13
+        elif state["level"] == 6:
+            garbage_speed = 0.4
+            time_to_sleep = 11
+        elif state["level"] == 7:
+            garbage_speed = 0.45
+            time_to_sleep = 10
+        elif state["level"] == 8:
+            garbage_speed = 0.5
+            time_to_sleep = 9
+        elif state["level"] == 9:
+            garbage_speed = 0.55
+            time_to_sleep = 8
+        elif state["level"] >= 10:
+            garbage_speed = 0.6
+            time_to_sleep = 5
+        else:
+            garbage_speed = 0.6
+            time_to_sleep = 5
+        state["routines"].append(
+            fly_garbage(
+                state,
+                garbage_obstacle,
+                canvas,
+                column,
+                frame,
+                speed=garbage_speed,
+            ),
+        )
+        await sleep(time_to_sleep)
 
 
 def get_trash_coroutines(canvas, width, height, number=5):
@@ -102,13 +112,13 @@ async def fly_garbage(
         draw_frame(canvas, row, column, garbage_frame, negative=True)
         row += speed
 
-        for i in state["collisions"]:
+        for collision in state["collisions"]:
             if obstacle.has_collision(
-                i.row,
-                i.column,
+                collision.row,
+                collision.column,
             ):
                 state["routines"].append(explode(canvas, row, column))
-                state["collisions"].remove(i)
+                state["collisions"].remove(collision)
                 state["obstacles"].remove(obstacle)
                 return
     state["obstacles"].remove(obstacle)
