@@ -33,28 +33,28 @@ async def fill_orbit_with_garbage(
 
         if state["level"] == 1:
             garbage_speed = 0.1
-            time_to_sleep = 30
+            time_to_sleep = 50
         elif state["level"] == 2:
             garbage_speed = 0.2
-            time_to_sleep = 25
+            time_to_sleep = 45
         elif state["level"] == 3:
             garbage_speed = 0.25
-            time_to_sleep = 20
+            time_to_sleep = 40
         elif state["level"] == 4:
             garbage_speed = 0.3
-            time_to_sleep = 15
+            time_to_sleep = 35
         elif state["level"] == 5:
             garbage_speed = 0.35
-            time_to_sleep = 13
+            time_to_sleep = 30
         elif state["level"] == 6:
             garbage_speed = 0.4
-            time_to_sleep = 11
+            time_to_sleep = 20
         elif state["level"] == 7:
             garbage_speed = 0.45
-            time_to_sleep = 10
+            time_to_sleep = 15
         elif state["level"] == 8:
             garbage_speed = 0.5
-            time_to_sleep = 9
+            time_to_sleep = 10
         elif state["level"] == 9:
             garbage_speed = 0.55
             time_to_sleep = 8
