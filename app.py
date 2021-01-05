@@ -43,20 +43,20 @@ async def update_level(state, time_to_sleep=50):
 
 async def update_info_line(state, canvas, time_to_sleep=20):
     """ Updating year and level info on the screen """
-    PHRASES = {        
+    phrases = {
         1957: "First Sputnik",
         1961: "Gagarin flew!",
         1969: "Armstrong got on the moon!",
         1971: "First orbital space station Salute-1",
         1981: "Flight of the Shuttle Columbia",
-        1998: 'ISS start building',
-        2011: 'Messenger launch to Mercury',
+        1998: "ISS start building",
+        2011: "Messenger launch to Mercury",
         2020: "Take the plasma gun! Shoot the garbage!",
     }
-    while True:                
-        if state['year'] in PHRASES:
+    while True:
+        if state["year"] in phrases:
             canvas.clear()
-            info = f"[{PHRASES[state['year']]} in {state['year']}]"
+            info = f"[{phrases[state['year']]} in {state['year']}]"
         else:
             info = ""
 
@@ -80,7 +80,7 @@ def draw(window):
     }
 
     window_height, window_width = window.getmaxyx()
-    info_line = window.subwin(1, window_width, window_height-1, 0)
+    info_line = window.subwin(1, window_width, window_height - 1, 0)
     game_window = window.derwin(window_height - 1, window_width, 0, 0)
     game_window.nodelay(True)
     game_height = window_height - 1
@@ -119,7 +119,7 @@ def draw(window):
                 coroutine.send(None)
 
             except StopIteration:
-                state["routines"].remove(coroutine)                
+                state["routines"].remove(coroutine)
         game_window.refresh()
         time.sleep(0.03)
 

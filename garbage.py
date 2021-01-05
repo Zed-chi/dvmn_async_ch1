@@ -1,6 +1,6 @@
 import os
-
 from random import randint, choice
+
 from curses_tools import draw_frame, get_frame_size
 from utils import sleep
 from obstacles import Obstacle
@@ -52,7 +52,8 @@ def get_garbage_delay_tics(level):
         garbage_speed = 0.6
         time_to_sleep = 5
     return garbage_speed, time_to_sleep
-    
+
+
 async def fill_orbit_with_garbage(
     state,
     canvas,
@@ -61,15 +62,15 @@ async def fill_orbit_with_garbage(
     frames = get_trash_frames()
 
     while True:
-        garbage_speed, time_to_sleep = get_garbage_delay_tics(state["level"])        
-        
-        if time_to_sleep==None:
+        garbage_speed, time_to_sleep = get_garbage_delay_tics(state["level"])
+
+        if time_to_sleep == None:
             await sleep()
             continue
-        
+
         column = randint(1, width)
         frame = choice(frames)
-        rows, columns = get_frame_size(frame)        
+        rows, columns = get_frame_size(frame)
         print(f"year == {state['year']}")
         garbage_obstacle = Obstacle(0, column, rows, columns)
         state["obstacles"].append(garbage_obstacle)
@@ -127,7 +128,7 @@ async def fly_garbage(
                     collision.column,
                 ):
                     state["routines"].append(explode(canvas, row, column))
-                    state["collisions"].remove(collision)                    
+                    state["collisions"].remove(collision)
                     return
     finally:
         state["obstacles"].remove(obstacle)
