@@ -13,12 +13,10 @@ async def update_year(state, time_to_sleep=100):
         await sleep(time_to_sleep)
 
 
-async def update_level(state, time_to_sleep=100):
+async def update_level(state, time_to_sleep=50):
     while True:
-        if state["year"] == 1960:
+        if state["year"] == 1961:
             state["level"] = 2
-        elif state["year"] == 1965:
-            state["level"] = 3
         elif state["year"] == 1970:
             state["level"] = 3
         elif state["year"] == 1975:
@@ -37,20 +35,37 @@ async def update_level(state, time_to_sleep=100):
             state["level"] = 10
         elif state["year"] == 2015:
             state["level"] = 11
-        elif state["year"] == 2020:
+        elif state["year"] >= 2020:
             state["level"] = 12
+
         await sleep(time_to_sleep)
 
 
-async def update_info_line(state, canvas, time_to_sleep=100):
+async def update_info_line(state, canvas, time_to_sleep=20):
     """ Updating year and level info on the screen """
+    PHRASES = {        
+        1957: "First Sputnik",
+        1961: "Gagarin flew!",
+        1969: "Armstrong got on the moon!",
+        1971: "First orbital space station Salute-1",
+        1981: "Flight of the Shuttle Columbia",
+        1998: 'ISS start building',
+        2011: 'Messenger launch to Mercury',
+        2020: "Take the plasma gun! Shoot the garbage!",
+    }
+    while True:                
+        if state['year'] in PHRASES:
+            canvas.clear()
+            info = f"[{PHRASES[state['year']]} in {state['year']}]"
+        else:
+            info = ""
 
-    while True:
         canvas.addstr(
             0,
             0,
-            f"year is {state['year']}, level is {state['level']}",
+            f"year is {state['year']}, level is {state['level']} {info}",
         )
+
         canvas.refresh()
         await sleep(time_to_sleep)
 
@@ -102,10 +117,11 @@ def draw(window):
         for coroutine in state["routines"].copy():
             try:
                 coroutine.send(None)
+
             except StopIteration:
-                state["routines"].remove(coroutine)
+                state["routines"].remove(coroutine)                
         game_window.refresh()
-        time.sleep(0.05)
+        time.sleep(0.03)
 
 
 if __name__ == "__main__":
