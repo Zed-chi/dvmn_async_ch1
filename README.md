@@ -4,7 +4,7 @@
 Скорость постепенно увеличивается.
 Возможность стрелять появляется на втором уровне.
 
-![alt text](https://gifyu.com/image/FSK7)
+![Game Pic](https://s8.gifyu.com/images/IZOBRAZENIE589ed5b608462735.png)
 
 ## Требования:
 - python 3.7
