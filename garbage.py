@@ -103,22 +103,22 @@ async def fly_garbage(
 
     column = max(column, 0)
     column = min(column, columns_number - 1)
+    try:
+        while row < rows_number:
+            obstacle.row = row
+            draw_frame(canvas, row, column, garbage_frame)
 
-    while row < rows_number:
-        obstacle.row = row
-        draw_frame(canvas, row, column, garbage_frame)
+            await sleep(1)
+            draw_frame(canvas, row, column, garbage_frame, negative=True)
+            row += speed
 
-        await sleep(1)
-        draw_frame(canvas, row, column, garbage_frame, negative=True)
-        row += speed
-
-        for collision in state["collisions"]:
-            if obstacle.has_collision(
-                collision.row,
-                collision.column,
-            ):
-                state["routines"].append(explode(canvas, row, column))
-                state["collisions"].remove(collision)
-                state["obstacles"].remove(obstacle)
-                return
-    state["obstacles"].remove(obstacle)
+            for collision in state["collisions"]:
+                if obstacle.has_collision(
+                    collision.row,
+                    collision.column,
+                ):
+                    state["routines"].append(explode(canvas, row, column))
+                    state["collisions"].remove(collision)                    
+                    return
+    finally:
+        state["obstacles"].remove(obstacle)
