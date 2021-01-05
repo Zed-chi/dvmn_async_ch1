@@ -23,11 +23,15 @@ async def end(canvas):
 
 def get_rocket_frames_iter():
     with open(
-        "./animations/rocket_frame_1.txt", "r", encoding="utf-8",
+        "./animations/rocket_frame_1.txt",
+        "r",
+        encoding="utf-8",
     ) as file1:
         frame_1 = file1.read()
     with open(
-        "./animations/rocket_frame_2.txt", "r", encoding="utf-8",
+        "./animations/rocket_frame_2.txt",
+        "r",
+        encoding="utf-8",
     ) as file2:
         frame_2 = file2.read()
 
@@ -115,7 +119,10 @@ async def draw_rocket(
         frame_rows, frame_columns = get_frame_size(frame)
 
         row_speed, column_speed = update_speed(
-            row_speed, column_speed, row_delta, column_delta,
+            row_speed,
+            column_speed,
+            row_delta,
+            column_delta,
         )
 
         if row_delta == -1:
