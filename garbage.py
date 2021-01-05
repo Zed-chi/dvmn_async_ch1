@@ -70,8 +70,7 @@ async def fill_orbit_with_garbage(
 
         column = randint(1, width)
         frame = choice(frames)
-        rows, columns = get_frame_size(frame)
-        print(f"year == {state['year']}")
+        rows, columns = get_frame_size(frame)        
         garbage_obstacle = Obstacle(0, column, rows, columns)
         state["obstacles"].append(garbage_obstacle)
         state["routines"].append(
