@@ -117,7 +117,6 @@ def draw(window):
         for coroutine in state["routines"].copy():
             try:
                 coroutine.send(None)
-
             except StopIteration:
                 state["routines"].remove(coroutine)
         game_window.refresh()
