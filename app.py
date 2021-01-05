@@ -7,9 +7,13 @@ from stars import get_stars_coroutines
 from rocket import draw_rocket
 
 
-async def update_info_line(state, canvas):
-    """ Updating year and level info on the screen """
+async def update_year(state, time_to_sleep=100):
+    while True:
+        state["year"] += 1
+        await sleep(time_to_sleep)
 
+
+async def update_level(state, time_to_sleep=100):
     while True:
         if state["year"] == 1960:
             state["level"] = 2
@@ -35,13 +39,20 @@ async def update_info_line(state, canvas):
             state["level"] = 11
         elif state["year"] == 2020:
             state["level"] = 12
+        await sleep(time_to_sleep)
 
+
+async def update_info_line(state, canvas, time_to_sleep=100):
+    """ Updating year and level info on the screen """
+
+    while True:
         canvas.addstr(
-            0, 0, f"year is {state['year']}, level is {state['level']}",
+            0,
+            0,
+            f"year is {state['year']}, level is {state['level']}",
         )
         canvas.refresh()
-        await sleep(100)
-        state["year"] += 1
+        await sleep(time_to_sleep)
 
 
 def draw(window):
@@ -54,24 +65,37 @@ def draw(window):
     }
 
     window_height, window_width = window.getmaxyx()
-    info_line = window.subwin(1, window_width, 0, 0)
-    game_window = window.derwin(window_height - 1, window_width, 1, 0)
+    info_line = window.subwin(1, window_width, window_height-1, 0)
+    game_window = window.derwin(window_height - 1, window_width, 0, 0)
     game_window.nodelay(True)
     game_height = window_height - 1
     game_width = window_width
     border = {"top": 0, "bottom": game_height, "left": 0, "right": game_width}
 
     stars_coroutines = get_stars_coroutines(
-        game_window, game_width, game_height,
+        game_window,
+        game_width,
+        game_height,
     )
     rocket_coroutine = draw_rocket(
-        state, game_window, game_height // 2, game_width // 2, border,
+        state,
+        game_window,
+        game_height // 2,
+        game_width // 2,
+        border,
     )
     garbage_creator = fill_orbit_with_garbage(state, game_window, game_width)
     info_coroutine = update_info_line(state, info_line)
 
     state["routines"].extend(
-        [garbage_creator, rocket_coroutine, *stars_coroutines, info_coroutine],
+        [
+            garbage_creator,
+            rocket_coroutine,
+            *stars_coroutines,
+            info_coroutine,
+            update_year(state),
+            update_level(state),
+        ],
     )
 
     while True:
