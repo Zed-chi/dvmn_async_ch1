@@ -17,6 +17,42 @@ def get_trash_frames():
     return frames
 
 
+def get_garbage_delay_tics(level):
+    if level == 1:
+        garbage_speed = None
+        time_to_sleep = None
+    elif level == 2:
+        garbage_speed = 0.2
+        time_to_sleep = 80
+    elif level == 3:
+        garbage_speed = 0.25
+        time_to_sleep = 70
+    elif level == 4:
+        garbage_speed = 0.3
+        time_to_sleep = 60
+    elif level == 5:
+        garbage_speed = 0.35
+        time_to_sleep = 40
+    elif level == 6:
+        garbage_speed = 0.4
+        time_to_sleep = 20
+    elif level == 7:
+        garbage_speed = 0.45
+        time_to_sleep = 15
+    elif level == 8:
+        garbage_speed = 0.5
+        time_to_sleep = 10
+    elif level == 9:
+        garbage_speed = 0.55
+        time_to_sleep = 8
+    elif level >= 10:
+        garbage_speed = 0.6
+        time_to_sleep = 5
+    else:
+        garbage_speed = 0.6
+        time_to_sleep = 5
+    return garbage_speed, time_to_sleep
+    
 async def fill_orbit_with_garbage(
     state,
     canvas,
@@ -25,45 +61,18 @@ async def fill_orbit_with_garbage(
     frames = get_trash_frames()
 
     while True:
+        garbage_speed, time_to_sleep = get_garbage_delay_tics(state["level"])        
+        
+        if time_to_sleep==None:
+            await sleep()
+            continue
+        
         column = randint(1, width)
         frame = choice(frames)
-        rows, columns = get_frame_size(frame)
+        rows, columns = get_frame_size(frame)        
+        print(f"year == {state['year']}")
         garbage_obstacle = Obstacle(0, column, rows, columns)
         state["obstacles"].append(garbage_obstacle)
-
-        if state["level"] == 1:
-            garbage_speed = 0.1
-            time_to_sleep = 50
-        elif state["level"] == 2:
-            garbage_speed = 0.2
-            time_to_sleep = 45
-        elif state["level"] == 3:
-            garbage_speed = 0.25
-            time_to_sleep = 40
-        elif state["level"] == 4:
-            garbage_speed = 0.3
-            time_to_sleep = 35
-        elif state["level"] == 5:
-            garbage_speed = 0.35
-            time_to_sleep = 30
-        elif state["level"] == 6:
-            garbage_speed = 0.4
-            time_to_sleep = 20
-        elif state["level"] == 7:
-            garbage_speed = 0.45
-            time_to_sleep = 15
-        elif state["level"] == 8:
-            garbage_speed = 0.5
-            time_to_sleep = 10
-        elif state["level"] == 9:
-            garbage_speed = 0.55
-            time_to_sleep = 8
-        elif state["level"] >= 10:
-            garbage_speed = 0.6
-            time_to_sleep = 5
-        else:
-            garbage_speed = 0.6
-            time_to_sleep = 5
         state["routines"].append(
             fly_garbage(
                 state,
