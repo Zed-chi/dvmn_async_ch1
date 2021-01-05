@@ -113,7 +113,7 @@ async def draw_rocket(
         draw_frame(canvas, row, column, frame, negative=True)
 
         row_delta, column_delta, space = read_controls(canvas)
-        if space and state["year"] >= 1960:
+        if space and state["year"] >= 2020:
             state["routines"].append(fire(state, canvas, row, column + 2))
 
         frame_rows, frame_columns = get_frame_size(frame)
